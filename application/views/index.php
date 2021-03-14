@@ -61,7 +61,16 @@
     <script>
     $(function() {
         $("#kotaasal").autocomplete({
-            source: <?= base_url('home/getDataKabupaten'); ?>
+            source: '<?= base_url('home/getDataKabupaten') ?>',
+            select: function(event, data) {
+                $('#kotaasalrajaongkir').val(data.item.kabupaten)
+            }
+        });
+        $("#kotatujuan").autocomplete({
+            source: '<?= base_url('home/getDataKabupaten') ?>',
+            select: function(event, data) {
+                $('#kotatujuanrajaongkir').val(data.item.kabupaten)
+            }
         });
     });
     </script>
