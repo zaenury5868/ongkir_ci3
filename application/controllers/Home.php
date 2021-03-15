@@ -7,10 +7,11 @@ class Home extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('Home_model');	
+		$this->load->model('Home_model');
+		$this->keyrajaongkir = '521bb93421967c1103c9470cb76ec77e';
+		$this->kabupatenrajaongkir = 'https://api.rajaongkir.com/starter/city?key='.$this->keyrajaongkir;
 	}
 	
-
 	public function index()
 	{
 		$this->load->view('index');
@@ -33,5 +34,17 @@ class Home extends CI_Controller {
 				
 			}
 		}
+	}
+
+	public function getDataKabupatenRajaOngkir()
+	{
+		$kabupaten = json_decode(file_get_contents($this->kabupatenrajaongkir));
+		$semuadatakabupaten = $kabupaten->rajaongkir->results;
+		foreach($semuadatakabupaten as $row){
+			var_dump($row->city_name);
+
+		}
+		
+		die;
 	}
 }
