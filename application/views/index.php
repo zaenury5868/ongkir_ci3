@@ -23,11 +23,13 @@
                         <input type="text" class="form-control" placeholder="Kota asal pengiriman" id="kotaasal"
                             name="kotaasal">
                         <input type="hidden" id="kotaasalrajaongkir" value="" name="kotaasalrajaongkir">
+                        <?= form_error('kotaasalrajaongkir') ?>
                     </div>
                     <div class="col">
                         <input type="text" class="form-control" placeholder="Kota tujuan pengiriman" id="kotatujuan"
                             name="kotatujuan">
                         <input type="hidden" id="kotatujuanrajaongkir" value="" name="kotatujuanrajaongkir">
+                        <?= form_error('kotatujuanrajaongkir') ?>
                     </div>
                     <div class="col">
                         <div class="input-group">
@@ -36,12 +38,14 @@
                             <div class="input-group-prepend">
                                 <div class="input-group-text">Kg</div>
                             </div>
+                            <?= form_error('beratkirim') ?>
                         </div>
                     </div>
                     <div class="col">
                         <button class="btn btn-primary" type="submit">Periksa ongkir</button>
                     </div>
                 </div>
+                <h4 class="text-danger"><?= $this->session->flashdata('pesan');?></h4>
             </form>
         </div>
         <hr />
