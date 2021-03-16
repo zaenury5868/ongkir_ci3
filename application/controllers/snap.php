@@ -26,6 +26,7 @@ class Snap extends CI_Controller {
 		$this->load->library('midtrans');
 		$this->midtrans->config($params);
 		$this->load->helper('url');	
+		$this->load->model('Midtrans_model');
     }
 
     public function index()
@@ -35,63 +36,74 @@ class Snap extends CI_Controller {
 
     public function token()
     {
-		
+		$grossamount = $this->input->get('grossamount');
+		$datakeranjang = $this->Midtrans_model->getallkeranjang();
 		// Required
 		$transaction_details = array(
 		  'order_id' => rand(),
-		  'gross_amount' => 94000, // no decimal allowed for creditcard
+		  'gross_amount' => $grossamount, // no decimal allowed for creditcard
 		);
 
-		// Optional
-		$item1_details = array(
-		  'id' => 'a1',
-		  'price' => 18000,
-		  'quantity' => 3,
-		  'name' => "Apple"
-		);
+		$item_details = array();
+		foreach($datakeranjang as $keranjang){
+			$item_details[] = array(
+				'id' => $keranjang['id'],
+				'price' => $keranjang['harga'],
+				'quantity' => $keranjang['jumlah'],
+				'name' => $keranjang['produk']
+			);
+		}
+
+		// // Optional
+		// $item1_details = array(
+		//   'id' => 'a1',
+		//   'price' => 18000,
+		//   'quantity' => 3,
+		//   'name' => "Apple"
+		// );
+
+		// // Optional
+		// $item2_details = array(
+		//   'id' => 'a2',
+		//   'price' => 20000,
+		//   'quantity' => 2,
+		//   'name' => "Orange"
+		// );
 
 		// Optional
-		$item2_details = array(
-		  'id' => 'a2',
-		  'price' => 20000,
-		  'quantity' => 2,
-		  'name' => "Orange"
-		);
+		// $item_details = array ($item1_details, $item2_details);
 
 		// Optional
-		$item_details = array ($item1_details, $item2_details);
+		// $billing_address = array(
+		//   'first_name'    => "Andri",
+		//   'last_name'     => "Litani",
+		//   'address'       => "Mangga 20",
+		//   'city'          => "Jakarta",
+		//   'postal_code'   => "16602",
+		//   'phone'         => "081122334455",
+		//   'country_code'  => 'IDN'
+		// );
 
-		// Optional
-		$billing_address = array(
-		  'first_name'    => "Andri",
-		  'last_name'     => "Litani",
-		  'address'       => "Mangga 20",
-		  'city'          => "Jakarta",
-		  'postal_code'   => "16602",
-		  'phone'         => "081122334455",
-		  'country_code'  => 'IDN'
-		);
+		// // Optional
+		// $shipping_address = array(
+		//   'first_name'    => "Obet",
+		//   'last_name'     => "Supriadi",
+		//   'address'       => "Manggis 90",
+		//   'city'          => "Jakarta",
+		//   'postal_code'   => "16601",
+		//   'phone'         => "08113366345",
+		//   'country_code'  => 'IDN'
+		// );
 
-		// Optional
-		$shipping_address = array(
-		  'first_name'    => "Obet",
-		  'last_name'     => "Supriadi",
-		  'address'       => "Manggis 90",
-		  'city'          => "Jakarta",
-		  'postal_code'   => "16601",
-		  'phone'         => "08113366345",
-		  'country_code'  => 'IDN'
-		);
-
-		// Optional
-		$customer_details = array(
-		  'first_name'    => "Andri",
-		  'last_name'     => "Litani",
-		  'email'         => "andri@litani.com",
-		  'phone'         => "081122334455",
-		  'billing_address'  => $billing_address,
-		  'shipping_address' => $shipping_address
-		);
+		// // Optional
+		// $customer_details = array(
+		//   'first_name'    => "Andri",
+		//   'last_name'     => "Litani",
+		//   'email'         => "andri@litani.com",
+		//   'phone'         => "081122334455",
+		//   'billing_address'  => $billing_address,
+		//   'shipping_address' => $shipping_address
+		// );
 
 		// Data yang akan dikirim untuk request redirect_url.
         $credit_card['secure'] = true;
@@ -101,14 +113,14 @@ class Snap extends CI_Controller {
         $time = time();
         $custom_expiry = array(
             'start_time' => date("Y-m-d H:i:s O",$time),
-            'unit' => 'minute', 
-            'duration'  => 2
+            'unit' => 'day', 
+            'duration'  => 1
         );
         
         $transaction_data = array(
             'transaction_details'=> $transaction_details,
             'item_details'       => $item_details,
-            'customer_details'   => $customer_details,
+            // 'customer_details'   => $customer_details,
             'credit_card'        => $credit_card,
             'expiry'             => $custom_expiry
         );
@@ -121,6 +133,11 @@ class Snap extends CI_Controller {
 
     public function finish()
     {
+		$datakeranjang = $this->Midtrans_model->getallkeranjang();
+		foreach($datakeranjang as $keranjang){
+			$this->db->update('tr_cart', ['status' => 1],['id' =>$keranjang['id']]);
+			
+		}
     	$result = json_decode($this->input->post('result_data'));
     	echo 'RESULT <br><pre>';
     	var_dump($result);

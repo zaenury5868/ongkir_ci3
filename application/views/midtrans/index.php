@@ -117,12 +117,16 @@
 
     <script>
     $('#tombol-bayar').click(function(event) {
+        var grossamount = $(this).data('amount');
         event.preventDefault();
         $(this).attr("disabled", "disabled");
 
         $.ajax({
             url: '<?= base_url() ?>/snap/token',
             cache: false,
+            data: {
+                grossamount: grossamount
+            },
 
             success: function(data) {
                 //location = data;
