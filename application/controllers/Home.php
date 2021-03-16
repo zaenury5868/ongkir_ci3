@@ -60,11 +60,12 @@ class Home extends CI_Controller {
 				$datakurir = [];
 				foreach($kurir as $value) {
 					$itemcourier = $this->_cost($origin, $destination, $beratkirim, $value);
-					echo "<pre>";
-					print_r($itemcourier);
-					echo "</pre>";
+					array_push($datakurir, $itemcourier);
 				}
-				die;
+				
+				$data['hasil']= $datakurir;
+				$this->load->view('hasil', $data);
+				
 			}
 		}
 		
