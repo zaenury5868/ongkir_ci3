@@ -56,11 +56,50 @@ class Home extends CI_Controller {
 					$this->session->set_flashdata('pesan', 'kabupaten tidak ada');
 					redirect('home');
 				}
-				var_dump($origin, $destination);
+				$kurir = ['jne', 'pos', 'tiki'];
+				$datakurir = [];
+				foreach($kurir as $value) {
+					$itemcourier = $this->_cost($origin, $destination, $beratkirim, $value);
+					echo "<pre>";
+					print_r($itemcourier);
+					echo "</pre>";
+				}
 				die;
 			}
 		}
 		
+	}
+
+	public function _cost($origin, $destination, $beratkirim, $value)
+	{
+		$curl = curl_init();
+
+		curl_setopt_array($curl, array(
+		CURLOPT_URL => "https://api.rajaongkir.com/starter/cost",
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_ENCODING => "",
+		CURLOPT_MAXREDIRS => 10,
+		CURLOPT_TIMEOUT => 30,
+		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		CURLOPT_CUSTOMREQUEST => "POST",
+		CURLOPT_POSTFIELDS => "origin=$origin&destination=$destination&weight=$beratkirim&courier=$value",
+		CURLOPT_HTTPHEADER => array(
+			"content-type: application/x-www-form-urlencoded",
+			"key: ".$this->keyrajaongkir
+		),
+		));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+		echo "cURL Error #:" . $err;
+		} else {
+			$data = json_decode($response);
+			return $data;
+		}
 	}
 
 	public function getDataKabupaten()
