@@ -36,7 +36,7 @@
 						foreach($datacart as $keranjang): ?>
                         <tr>
                             <th scope="row"><?= $i++; ?></th>
-                            <td><?= $keranjang['produk']; ?><?= $keranjang['jumlah'];?></td>
+                            <td><?= $keranjang['produk']; ?> - <?= $keranjang['jumlah'];?></td>
                             <td><?= $keranjang['harga']; ?></td>
                             <td><?= $keranjang['harga'] * $keranjang['jumlah']; ?></td>
                         </tr>
@@ -49,7 +49,8 @@
                         </tr>
                     </tbody>
                 </table>
-                <button class="btn btn-sm btn-success float-right">Bayar</button>
+                <button class="btn btn-sm btn-success float-right" id="tombol-bayar"
+                    data-amount="<?= $total; ?>">Bayar</button>
             </div>
         </div>
     </div>
@@ -92,14 +93,18 @@
             </form>
         </div>
     </div>
+    <form id="payment-form" method="post" action="<?= base_url()?>/snap/finish">
+        <input type="hidden" name="result_type" id="result-type" value=""></div>
+        <input type="hidden" name="result_data" id="result-data" value=""></div>
+    </form>
     <!-- Optional JavaScript; choose one of the two! -->
     <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="<SB-Mid-client-divUuBu0PrB3gWxR>"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
-    </script>
+    </script> -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
     </script>
@@ -109,6 +114,54 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
     -->
+
+    <script>
+    $('#tombol-bayar').click(function(event) {
+        event.preventDefault();
+        $(this).attr("disabled", "disabled");
+
+        $.ajax({
+            url: '<?= base_url() ?>/snap/token',
+            cache: false,
+
+            success: function(data) {
+                //location = data;
+
+                console.log('token = ' + data);
+
+                var resultType = document.getElementById('result-type');
+                var resultData = document.getElementById('result-data');
+
+                function changeResult(type, data) {
+                    $("#result-type").val(type);
+                    $("#result-data").val(JSON.stringify(data));
+                    //resultType.innerHTML = type;
+                    //resultData.innerHTML = JSON.stringify(data);
+                }
+
+                snap.pay(data, {
+
+                    onSuccess: function(result) {
+                        changeResult('success', result);
+                        console.log(result.status_message);
+                        console.log(result);
+                        $("#payment-form").submit();
+                    },
+                    onPending: function(result) {
+                        changeResult('pending', result);
+                        console.log(result.status_message);
+                        $("#payment-form").submit();
+                    },
+                    onError: function(result) {
+                        changeResult('error', result);
+                        console.log(result.status_message);
+                        $("#payment-form").submit();
+                    }
+                });
+            }
+        });
+    });
+    </script>
 </body>
 
 
