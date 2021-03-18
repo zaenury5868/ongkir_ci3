@@ -143,5 +143,43 @@ class Snap extends CI_Controller {
     	var_dump($result);
     	echo '</pre>' ;
 
+		if($result->payment_type == 'bank_transfer'){
+			if(@$result->va_numbers){
+				foreach($result->va_numbers as $row){
+					$bank = $row->bank;
+					$vaNumber = $row->va_number;
+					$billerCode = '';
+				}
+			}else {
+				$bank = 'permata';
+				$vaNumber = $result->permata_va_number;
+				$billerCode = '';
+			}
+		}elseif($result->payment_type == 'echannel'){
+			$bank = 'mandiri';
+			$vaNumber = $result->bill_key;
+			$billerCode = $result->biller_code;
+		}else{
+			$bank = 'alfamaert/indomart';
+			$vaNumber = $result->payment_code;
+			$billerCode = '';
+		}
+		$grossAmount = str_replace('.00', '', $result->gross_amount);
+		$dataInput = [
+			'order_id' => $result->order_id,
+			'gross_amount' => $grossAmount,
+			'payment_type' => $result->payment_type,
+			'bank' => $bank,
+			'va_number' => $vaNumber,
+			'biller_code' => $billerCode,
+			'transaction_status' => $result->transaction_status,
+			'transaction_time' => $result->transaction_time,
+			'pdf_url' => $result->pdf_url,
+			'date_created' => time(),
+			'date_modified' => time()
+		];
+		$this->db->insert('tr_cart_to_checkout', $dataInput);
+		
+
     }
 }
