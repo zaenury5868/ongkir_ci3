@@ -19,7 +19,7 @@
         <div class="row">
             <div class="col-12">
                 <button type="button" class="btn btn-sm btn-primary mb-2" data-toggle="modal"
-                    data-target="#exampleModal">Tambah Barang</button>
+                    data-target="#exampleModal">Beli Barang</button>
                 <?= $this->session->flashdata('pesan');?>
                 <table class="table table-hover">
                     <thead>
@@ -49,8 +49,50 @@
                         </tr>
                     </tbody>
                 </table>
-                <button class="btn btn-sm btn-success float-right" id="tombol-bayar"
+                <button class="btn btn-sm btn-primary float-right" id="tombol-bayar"
                     data-amount="<?= $total; ?>">Bayar</button>
+            </div>
+        </div>
+    </div>
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-12">
+                <h3>Data Transaksi</h3>
+                <form action="<?= base_url('midtrans/cekstatus') ?>" method="POST">
+                    <div class="row my-2">
+                        <div class="col-4">
+                            <input type="text" class="form-control" name="order_id" placeholder="cek status pembayaran">
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary">cari</button>
+                        </div>
+                    </div>
+                </form>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Bank</th>
+                            <th scope="col">Order ID</th>
+                            <th scope="col">Total Pembayaran</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Tanggal Update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $i = 1; foreach($semuatransaksi as $transaksi): ?>
+                        <tr>
+                            <th scope="row"><?= $i++; ?></th>
+                            <td><?= strtoupper($transaksi['bank']); ?></td>
+                            <td><?= $transaksi['order_id']; ?></td>
+                            <td><?= $transaksi['gross_amount']; ?></td>
+                            <td><?= $transaksi['transaction_status']; ?></td>
+                            <td><?= date('d-F-Y H:i:s', $transaksi['date_modified']); ?></td>
+
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

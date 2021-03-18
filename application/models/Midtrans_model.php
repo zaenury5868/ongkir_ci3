@@ -22,6 +22,19 @@ class Midtrans_model extends CI_Model {
 		return $this->db->get_where('tr_cart as a', ['a.status' => 0])->result_array();
 	}
 
+	public function getalltransaction()
+	{
+		$this->db->order_by('id', 'DESC');
+		return $this->db->get('tr_cart_to_checkout')->result_array();
+		
+	}
+
+	public function update($dataupdate, $where)
+	{
+		$this->db->update('tr_cart_to_checkout', $dataupdate, $where);
+		return $this->db->affected_rows();
+	}
+
 }
 
 /* End of file ModelName.php */
